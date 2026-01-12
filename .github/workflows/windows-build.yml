@@ -1,3 +1,4 @@
+
 name: Windows Build Release
 
 on:
@@ -34,28 +35,33 @@ jobs:
       - name: Build Tauri app
         run: npx tauri build
 
-      - name: Rename Windows release assets
+      - name: Rename Windows release bundles
         shell: pwsh
         run: |
+          $ErrorActionPreference = "Stop"
+
           $AppName = "my-notes-app"
           $Version = $env:GITHUB_REF_NAME -replace '^v',''
 
-          $ReleaseDir = "src-tauri/target/release"
+          Set-Location src-tauri/target/release
 
-          # Raw executable
-          $exe = Get-ChildItem "$ReleaseDir\*.exe" | Where-Object { $_.Name -notmatch "installer|setup" } | Select-Object -First 1
-          if ($exe) {
-            Rename-Item $exe.FullName "$AppName`_$Version`_windows-x64.exe"
+          if (Test-Path "app.exe") {
+            Rename-Item "app.exe" "$AppName`_$Version`_windows-x64.exe" -Force
           }
 
-          # MSI installer
-          Get-ChildItem "$ReleaseDir\bundle\msi\*.msi" -ErrorAction SilentlyContinue | ForEach-Object {
-            Rename-Item $_.FullName "$ReleaseDir\$AppName`_$Version.msi"
+          Set-Location bundle
+
+          if (Test-Path "msi") {
+            Get-ChildItem "msi\*.msi" | ForEach-Object {
+              Rename-Item $_.FullName "..\$AppName`_$Version.msi" -Force
+            }
           }
 
-          # NSIS installer (if enabled)
-          Get-ChildItem "$ReleaseDir\bundle\nsis\*.exe" -ErrorAction SilentlyContinue | ForEach-Object {
-            Rename-Item $_.FullName "$ReleaseDir\$AppName`_$Version-setup.exe"
+          # NSIS installer (optional)
+          if (Test-Path "nsis") {
+            Get-ChildItem "nsis\*.exe" | ForEach-Object {
+              Rename-Item $_.FullName "..\$AppName`_$Version-setup.exe" -Force
+            }
           }
 
       - name: Create GitHub Release
@@ -67,3 +73,4 @@ jobs:
             src-tauri/target/release/my-notes-app_*_windows-x64.exe
             src-tauri/target/release/*.msi
             src-tauri/target/release/*-setup.exe
+
