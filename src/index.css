@@ -60,22 +60,5 @@ html {
 }
 .delete-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #1f5a91;
-}
-@keyframes scale-in {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.animate-scale-in {
-  animation: scale-in 0.15s ease-out;
-}
-.note-card {
-  transition: transform 0.1s ease-in-out;
+  box-shadow: 0 0 0 2px #3182ce;
 }
