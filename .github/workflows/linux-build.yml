@@ -1,0 +1,77 @@
+name: Linux Build Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            libwebkit2gtk-4.1-dev \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            build-essential \
+            jq
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build Tauri app
+        run: npx tauri build
+
+      - name: Rename release bundles
+        run: |
+          APP_NAME="my-notes-app"
+          VERSION=${GITHUB_REF_NAME#v}
+
+          cd src-tauri/target/release/bundle
+
+          if [ -d appimage ]; then
+            mv appimage/*.AppImage "${APP_NAME}_${VERSION}.AppImage"
+          fi
+
+          if [ -d deb ]; then
+            mv deb/*.deb "${APP_NAME}_${VERSION}.deb"
+          fi
+
+          if [ -d rpm ]; then
+            mv rpm/*.rpm "${APP_NAME}_${VERSION}.rpm"
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release ${{ github.ref_name }}"
+          tag_name: ${{ github.ref_name }}
+          files: |
+            src-tauri/target/release/bundle/*.AppImage
+            src-tauri/target/release/bundle/*.deb
+            src-tauri/target/release/bundle/*.rpm
+
