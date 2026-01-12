@@ -51,7 +51,14 @@ jobs:
           APP_NAME="my-notes-app"
           VERSION=${GITHUB_REF_NAME#v}
 
-          cd src-tauri/target/release/bundle
+          cd src-tauri/target/release/
+
+          if [ -f app ]; then
+            mv app "${APP_NAME}_${VERSION}_linux-x64"
+            chmod +x "${APP_NAME}_${VERSION}_linux-x64"
+          fi
+
+          cd bundle/
 
           if [ -d appimage ]; then
             mv appimage/*.AppImage "${APP_NAME}_${VERSION}.AppImage"
@@ -71,6 +78,7 @@ jobs:
           name: "Release ${{ github.ref_name }}"
           tag_name: ${{ github.ref_name }}
           files: |
+            src-tauri/target/release/my-notes-app_*_linux-x64
             src-tauri/target/release/bundle/*.AppImage
             src-tauri/target/release/bundle/*.deb
             src-tauri/target/release/bundle/*.rpm
