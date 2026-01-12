@@ -53,14 +53,13 @@ jobs:
 
           if (Test-Path "msi") {
             Get-ChildItem "msi\*.msi" | ForEach-Object {
-              Rename-Item $_.FullName "..\$AppName`_$Version.msi" -Force
+              Move-Item $_.FullName "..\$AppName`_$Version.msi" -Force
             }
           }
 
-          # NSIS installer (optional)
           if (Test-Path "nsis") {
             Get-ChildItem "nsis\*.exe" | ForEach-Object {
-              Rename-Item $_.FullName "..\$AppName`_$Version-setup.exe" -Force
+              Move-Item $_.FullName "..\$AppName`_$Version-setup.exe" -Force
             }
           }
 
