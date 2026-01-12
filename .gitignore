@@ -2,7 +2,6 @@
 
 # dependencies
 /node_modules
-*-lock.json
 *-lock.yaml
 # next.js
 /.next/
