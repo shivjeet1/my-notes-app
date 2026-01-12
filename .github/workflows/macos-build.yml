@@ -34,7 +34,7 @@ jobs:
       - name: Build Tauri app
         run: npx tauri build
 
-      - name: Rename macOS release assets
+      - name: Rename & package macOS release bundles
         shell: bash
         run: |
           set -e
@@ -42,25 +42,25 @@ jobs:
           APP_NAME="my-notes-app"
           VERSION="${GITHUB_REF_NAME#v}"
 
-          RELEASE_DIR="src-tauri/target/release"
-          BUNDLE_DIR="$RELEASE_DIR/bundle"
+          cd src-tauri/target/release
 
           # Raw Mach-O binary
-          if [ -f "$RELEASE_DIR/app" ]; then
-            mv "$RELEASE_DIR/app" "$RELEASE_DIR/${APP_NAME}_${VERSION}_macos-universal"
-            chmod +x "$RELEASE_DIR/${APP_NAME}_${VERSION}_macos-universal"
+          if [ -f app ]; then
+            mv app "${APP_NAME}_${VERSION}_macos-universal"
+            chmod +x "${APP_NAME}_${VERSION}_macos-universal"
           fi
+
+          cd bundle
 
           # DMG installer
-          if ls "$BUNDLE_DIR/dmg/"*.dmg 1> /dev/null 2>&1; then
-            mv "$BUNDLE_DIR/dmg/"*.dmg "$RELEASE_DIR/${APP_NAME}_${VERSION}.dmg"
+          if [ -d dmg ]; then
+            mv dmg/*.dmg "../${APP_NAME}_${VERSION}.dmg"
           fi
 
-          # .app bundle → zip it for distribution
-          APP_BUNDLE=$(ls "$BUNDLE_DIR/macos/"*.app 2>/dev/null || true)
-          if [ -n "$APP_BUNDLE" ]; then
-            cd "$BUNDLE_DIR/macos"
-            zip -r "$RELEASE_DIR/${APP_NAME}_${VERSION}.app.zip" *.app
+          # .app bundle → zip it (Linux-style relative paths)
+          if [ -d macos ]; then
+            cd macos
+            zip -r "../../${APP_NAME}_${VERSION}.app.zip" *.app
           fi
 
       - name: Create GitHub Release
@@ -72,3 +72,4 @@ jobs:
             src-tauri/target/release/my-notes-app_*_macos-universal
             src-tauri/target/release/*.dmg
             src-tauri/target/release/*.app.zip
+
