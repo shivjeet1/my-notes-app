@@ -1,0 +1,69 @@
+name: Windows Build Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build Tauri app
+        run: npx tauri build
+
+      - name: Rename Windows release assets
+        shell: pwsh
+        run: |
+          $AppName = "my-notes-app"
+          $Version = $env:GITHUB_REF_NAME -replace '^v',''
+
+          $ReleaseDir = "src-tauri/target/release"
+
+          # Raw executable
+          $exe = Get-ChildItem "$ReleaseDir\*.exe" | Where-Object { $_.Name -notmatch "installer|setup" } | Select-Object -First 1
+          if ($exe) {
+            Rename-Item $exe.FullName "$AppName`_$Version`_windows-x64.exe"
+          }
+
+          # MSI installer
+          Get-ChildItem "$ReleaseDir\bundle\msi\*.msi" -ErrorAction SilentlyContinue | ForEach-Object {
+            Rename-Item $_.FullName "$ReleaseDir\$AppName`_$Version.msi"
+          }
+
+          # NSIS installer (if enabled)
+          Get-ChildItem "$ReleaseDir\bundle\nsis\*.exe" -ErrorAction SilentlyContinue | ForEach-Object {
+            Rename-Item $_.FullName "$ReleaseDir\$AppName`_$Version-setup.exe"
+          }
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Release ${{ github.ref_name }}"
+          tag_name: ${{ github.ref_name }}
+          files: |
+            src-tauri/target/release/my-notes-app_*_windows-x64.exe
+            src-tauri/target/release/*.msi
+            src-tauri/target/release/*-setup.exe
