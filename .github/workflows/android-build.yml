@@ -70,6 +70,6 @@ jobs:
           name: "Release ${{ github.ref_name }}"
           tag_name: ${{ github.ref_name }}
           files: |
-            android/app/build/outputs/apk/release/my-notes-app_*_android_release.apk
+            android/app/build/outputs/apk/debug/my-notes-app_*_android_release.apk
 
 
