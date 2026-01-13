@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=My Notes
+Comment=Minimal offline notes app
+Exec=my-notes
+Icon=my-notes
+Terminal=false
+Type=Application
+Categories=Utility;
+
