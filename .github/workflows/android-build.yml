@@ -4,7 +4,7 @@ name: Android Build Release
 on:
   push:
     tags:
-      - "ver*"
+      - "v*"
   workflow_dispatch:
 
 jobs:
