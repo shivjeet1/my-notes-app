@@ -4,7 +4,7 @@ name: Android Build Release
 on:
   push:
     tags:
-      - "v*"
+      - "ver*"
   workflow_dispatch:
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
