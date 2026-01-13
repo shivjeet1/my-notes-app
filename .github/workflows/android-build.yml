@@ -13,13 +13,9 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
 
-    env:
-      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -29,7 +25,7 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Build frontend (Vite)
+      - name: Build frontend
         run: npm run build
 
       - name: Setup Java
@@ -44,7 +40,7 @@ jobs:
       - name: Accept Android SDK licenses
         run: yes | sdkmanager --licenses
 
-      - name: Install required Android SDK packages
+      - name: Install Android SDK packages
         run: |
           sdkmanager \
             "platform-tools" \
@@ -57,17 +53,18 @@ jobs:
       - name: Build Release APK
         run: |
           cd android
-          ./gradlew :app:assembleDebug
+          ./gradlew clean
+          ./gradlew assembleDebug
 
-      - name: Rename APK (hardcoded path)
+      - name: Rename APK
         run: |
           APP_NAME="my-notes-app"
           VERSION="${GITHUB_REF_NAME#v}"
 
-          cd android/app/build/outputs/apk/release
+          cd android/app/build/outputs/apk/debug/
           mv *.apk "${APP_NAME}_${VERSION}_android_release.apk"
 
-      - name: Create GitHub Release (attach APK)
+      - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: "Release ${{ github.ref_name }}"
