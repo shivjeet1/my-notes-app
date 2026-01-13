@@ -88,7 +88,7 @@ src-tauri/target/release/bundle/dmg/*.dmg
 
 ## Linux
 
-### Requirements (example: Ubuntu)
+### Requirements (example: Ubuntu, Arch & Other Linux Distributions)
 ```bash
 sudo apt install -y \
   libwebkit2gtk-4.1-dev \
@@ -107,6 +107,16 @@ cd my-notes-app
 npm ci
 npm run build
 npx tauri build
+```
+
+- If you want to, you can install it locally/systemwide
+```bash
+sudo make install
+```
+
+- Run in terminal to experience 'my-notes' :
+```bash
+my-notes
 ```
 
 ### Output is generated in :
