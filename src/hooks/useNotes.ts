@@ -41,5 +41,9 @@ export function useNotes() {
     setNotes(notes.map((note) => (note.id === id ? { ...note, pinned: !note.pinned } : note)))
   }
 
-  return { notes, addNote, deleteNote, updateNote, togglePin }
+  const restoreNotes = (importedNotes: Note[]) => {
+    setNotes(importedNotes)
+  }
+
+  return { notes, addNote, deleteNote, updateNote, togglePin, restoreNotes }
 }

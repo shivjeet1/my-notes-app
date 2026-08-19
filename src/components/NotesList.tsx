@@ -3,7 +3,6 @@ import { NoteCard } from "./NoteCard"
 
 interface NotesListProps {
   notes: Note[]
-  colorSeed: number
   onEdit: (id: string) => void
   onDelete: (id: string) => void
   onTogglePin: (id: string) => void
@@ -11,7 +10,6 @@ interface NotesListProps {
 
 export function NotesList({
   notes,
-  colorSeed,
   onEdit,
   onDelete,
   onTogglePin,
@@ -22,7 +20,6 @@ export function NotesList({
         <NoteCard
           key={note.id}
           note={note}
-          colorSeed={colorSeed}
           onEdit={() => onEdit(note.id)}
           onDelete={() => onDelete(note.id)}
           onTogglePin={() => onTogglePin(note.id)}

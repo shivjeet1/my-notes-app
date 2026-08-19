@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import type { Note } from "../types/Note"
 import { getColorForNote } from "../utils/colorPalette"
 import { Trash2, Pin } from "lucide-react"
@@ -8,7 +8,6 @@ import { ConfirmDialog } from "./ConfirmDialog"
 
 interface NoteCardProps {
   note: Note
-  colorSeed: number
   onEdit: () => void
   onDelete: () => void
   onTogglePin: () => void
@@ -16,23 +15,40 @@ interface NoteCardProps {
 
 export function NoteCard({
   note,
-  colorSeed,
   onEdit,
   onDelete,
   onTogglePin,
 }: NoteCardProps) {
-const bgColor = getColorForNote(note.id, colorSeed)
+const bgColor = getColorForNote(note.id)
 const textColor = getTextColorForBg(bgColor)
 const isTouchDevice =
   typeof window !== "undefined" &&
   ("ontouchstart" in window || navigator.maxTouchPoints > 0)
 const [menuOpen, setMenuOpen] = useState(false)
 const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null)
-let pressTimer: ReturnType<typeof setTimeout>
+const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+const touchStart = useRef<{ x: number; y: number } | null>(null)
 const [confirmDelete, setConfirmDelete] = useState(false)
 
+const openMenuAt = (x: number, y: number) => {
+  const menuWidth = 150
+  const menuHeight = 100
+  let posX = x
+  let posY = y
+  if (typeof window !== "undefined") {
+    if (x + menuWidth > window.innerWidth) posX = window.innerWidth - menuWidth - 10
+    if (y + menuHeight > window.innerHeight) posY = window.innerHeight - menuHeight - 10
+  }
+  setMenuPosition({ x: posX, y: posY })
+  setMenuOpen(true)
+}
 
-
+const clearPressTimer = () => {
+  if (pressTimer.current) {
+    clearTimeout(pressTimer.current)
+    pressTimer.current = null
+  }
+}
 
   return (
   <>
@@ -50,28 +66,37 @@ const [confirmDelete, setConfirmDelete] = useState(false)
 
         e.preventDefault()
         e.stopPropagation()
-        setMenuPosition({ x: e.clientX, y: e.clientY })
-        setMenuOpen(true)
+        openMenuAt(e.clientX, e.clientY)
       }}
 
       // ANDROID: long-press
       onPointerDown={(e) => {
         if (!isTouchDevice) return
-
-        pressTimer = setTimeout(() => {
-          setMenuPosition({ x: e.clientX, y: e.clientY })
-          setMenuOpen(true)
+        touchStart.current = { x: e.clientX, y: e.clientY }
+        pressTimer.current = setTimeout(() => {
+          openMenuAt(e.clientX, e.clientY)
         }, 500)
       }}
 
-      onPointerUp={() => {
-        if (!isTouchDevice) return
-        clearTimeout(pressTimer)
+      onPointerMove={(e) => {
+        if (!isTouchDevice || !touchStart.current) return
+        const dx = Math.abs(e.clientX - touchStart.current.x)
+        const dy = Math.abs(e.clientY - touchStart.current.y)
+        if (dx > 10 || dy > 10) {
+          clearPressTimer()
+        }
       }}
 
-      onPointerLeave={() => {
-        if (!isTouchDevice) return
-        clearTimeout(pressTimer)
+      onPointerUp={(e) => {
+        if (isTouchDevice) clearPressTimer()
+      }}
+
+      onPointerLeave={(e) => {
+        if (isTouchDevice) clearPressTimer()
+      }}
+
+      onPointerCancel={(e) => {
+        if (isTouchDevice) clearPressTimer()
       }}
     >
 
@@ -93,6 +118,7 @@ const [confirmDelete, setConfirmDelete] = useState(false)
               note.pinned ? "text-yellow-400" : "opacity-60"
             }`}
             title={note.pinned ? "Unpin note" : "Pin note"}
+            aria-label={note.pinned ? "Unpin note" : "Pin note"}
           >
             <Pin size={16} fill={note.pinned ? "currentColor" : "none"} />
           </button>
@@ -118,6 +144,7 @@ const [confirmDelete, setConfirmDelete] = useState(false)
             }}
             className="opacity-60 hover:opacity-100"
             title="Delete note"
+            aria-label="Delete note"
           >
             <Trash2 size={16} />
           </button>
@@ -139,9 +166,19 @@ const [confirmDelete, setConfirmDelete] = useState(false)
         }}
       />
 
+    {menuOpen && (
+      <div 
+        className="fixed inset-0 z-40" 
+        onClick={(e) => {
+          e.stopPropagation()
+          setMenuOpen(false)
+        }}
+      />
+    )}
+
     {menuOpen && menuPosition && (
       <div
-        className="fixed z-50 bg-gray-900 text-white rounded-lg shadow-lg text-sm overflow-hidden"
+        className="fixed z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg shadow-lg text-sm overflow-hidden"
         style={{
           top: menuPosition.y,
           left: menuPosition.x,
@@ -149,7 +186,7 @@ const [confirmDelete, setConfirmDelete] = useState(false)
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="block w-full px-4 py-2 text-left hover:bg-gray-800"
+          className="block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
           onClick={() => {
             onTogglePin()
             setMenuOpen(false)
@@ -177,14 +214,14 @@ const [confirmDelete, setConfirmDelete] = useState(false)
 }
 
 function getTextColorForBg(bgColor: string): string {
-  const colorMap: Record<string, string> = {
-    "#ff69b4": "text-gray-900",
-    "#ffd700": "text-gray-900",
-    "#00d9ff": "text-gray-900",
-    "#ff8c42": "text-gray-900",
-    "#a78bfa": "text-gray-900",
-  }
-  return colorMap[bgColor] || "text-gray-900"
+  const hex = bgColor.replace('#', '')
+  if (hex.length < 6) return "text-gray-900"
+  const r = parseInt(hex.substring(0, 2), 16)
+  const g = parseInt(hex.substring(2, 4), 16)
+  const b = parseInt(hex.substring(4, 6), 16)
+  
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.5 ? "text-gray-900" : "text-white"
 }
 
 function formatDate(date: string): string {

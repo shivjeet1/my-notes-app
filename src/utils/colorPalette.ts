@@ -21,10 +21,10 @@ export const NOTE_COLORS = [
   "#dfdfdfff",
 ]
 
-// deterministic hash → stable but seedable
-export function getColorForNote(id: string, seed: number): string {
+// deterministic hash → stable
+export function getColorForNote(id: string): string {
   let hash = 0
-  const str = id + seed
+  const str = id
 
   for (let i = 0; i < str.length; i++) {
     hash = (hash << 5) - hash + str.charCodeAt(i)

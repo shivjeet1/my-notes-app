@@ -16,12 +16,14 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
         placeholder="Search Notes"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-blue-500 text-white placeholder-white placeholder-opacity-50 rounded-full py-3 pl-12 pr-4 outline-none transition-all focus:ring-2 focus:ring-blue-400"
+        aria-label="Search Notes"
+        className="w-full bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-full py-3 pl-12 pr-4 outline-none transition-all focus:ring-2 focus:ring-blue-500"
       />
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:opacity-70 transition-opacity"
+          aria-label="Clear search"
+          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
         >
           <X size={20} />
         </button>
