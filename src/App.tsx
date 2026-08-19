@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { NotesList } from "./components/NotesList"
 import { NoteEditor } from "./components/NoteEditor"
 import { SearchBar } from "./components/SearchBar"
 import { SettingsPanel } from "./components/SettingsPanel"
 import { useNotes } from "./hooks/useNotes"
 import { Plus, Settings } from "lucide-react"
+import { SplashScreen } from "@capacitor/splash-screen"
 
 export default function App() {
   const { notes, addNote, deleteNote, updateNote, togglePin } = useNotes()
@@ -14,6 +15,11 @@ export default function App() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showEditor, setShowEditor] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+
+  useEffect(() => {
+    // Hide the splash screen smoothly once the app has mounted
+    SplashScreen.hide().catch(() => {});
+  }, [])
 
   const filteredNotes = notes.filter(
     (note) =>
