@@ -42,6 +42,22 @@ Go to the [GitHub Releases](https://github.com/shivjeet1/my-notes-app/releases) 
 
 ---
 
+## Triggering Releases (GitHub Actions)
+
+Release workflows for all platforms (Android, Linux, macOS, Windows) are automatically triggered by pushing a version tag matching `v*` to the repository.
+
+To build and publish a new release:
+```bash
+# Create a tag starting with 'v'
+git tag v1.0.0
+
+# Push the tag to GitHub
+git push origin v1.0.0
+```
+This will automatically compile the app for all platforms and upload the binaries to the GitHub Releases page.
+
+---
+
 ## Build from Source
 
 ### Common Requirements
