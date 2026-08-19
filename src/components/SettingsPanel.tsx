@@ -3,6 +3,8 @@ import { useTheme } from "./ThemeProvider"
 import { useNotes } from "../hooks/useNotes"
 import { useRef } from "react"
 import type { Note } from "../types/Note"
+import { Capacitor } from "@capacitor/core"
+import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
 
 interface SettingsPanelProps {
   onClose: () => void
@@ -13,14 +15,44 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const { notes, restoreNotes } = useNotes()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleBackup = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(notes))
-    const downloadAnchorNode = document.createElement("a")
-    downloadAnchorNode.setAttribute("href", dataStr)
-    downloadAnchorNode.setAttribute("download", `my-notes-backup-${new Date().toISOString().split('T')[0]}.json`)
-    document.body.appendChild(downloadAnchorNode)
-    downloadAnchorNode.click()
-    downloadAnchorNode.remove()
+  const handleBackup = async () => {
+    try {
+      const jsonStr = JSON.stringify(notes, null, 2)
+      const fileName = `my-notes-backup-${new Date().toISOString().split('T')[0]}.json`
+
+      if (Capacitor.isNativePlatform()) {
+        try {
+          const perm = await Filesystem.requestPermissions()
+          if (perm.publicStorage !== 'granted') {
+             alert("Storage permission is required to save backups.")
+             return
+          }
+        } catch (err) {
+          // Some platforms/versions might not support publicStorage permission request
+          console.warn("Could not request permissions", err)
+        }
+        
+        await Filesystem.writeFile({
+          path: fileName,
+          data: jsonStr,
+          directory: Directory.Documents,
+          encoding: Encoding.UTF8
+        })
+        alert(`Backup saved to Documents folder as ${fileName}`)
+      } else {
+        const blob = new Blob([jsonStr], { type: "application/json" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = fileName
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      }
+    } catch (e) {
+      alert("Failed to backup notes: " + e)
+    }
   }
 
   const handleRestore = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +63,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     reader.onload = (event) => {
       try {
         const json = JSON.parse(event.target?.result as string) as Note[]
-        if (Array.isArray(json)) {
+        if (Array.isArray(json) && json.every(n => n.id && typeof n.title === 'string' && typeof n.content === 'string')) {
           restoreNotes(json)
           alert("Notes restored successfully!")
         } else {
@@ -39,6 +71,8 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         }
       } catch (error) {
         alert("Failed to parse backup file.")
+      } finally {
+        if (fileInputRef.current) fileInputRef.current.value = ""
       }
     }
     reader.readAsText(file)

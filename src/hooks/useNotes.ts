@@ -5,13 +5,7 @@ import type { Note } from "../types/Note"
 import { loadNotes, saveNotes } from "../utils/storage"
 
 export function useNotes() {
-  const [notes, setNotes] = useState<Note[]>([])
-
-  // Load notes from storage on mount
-  useEffect(() => {
-    const loaded = loadNotes()
-    setNotes(loaded)
-  }, [])
+  const [notes, setNotes] = useState<Note[]>(() => loadNotes())
 
   // Save notes whenever they change
   useEffect(() => {
