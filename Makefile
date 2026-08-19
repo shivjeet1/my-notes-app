@@ -30,3 +30,9 @@ uninstall: check
 	sudo update-desktop-database /usr/share/applications || true
 	echo "Uninstalled $(APP_NAME) from terminal."
 
+clean:
+	@echo "Cleaning build artifacts..."
+	rm -rf node_modules
+	rm -rf dist
+	rm -rf src-tauri/target
+	@echo "Clean complete."
