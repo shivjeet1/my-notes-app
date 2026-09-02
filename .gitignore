@@ -26,3 +26,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+*.keystore
+keystore_base*
+keystore_base64.txt

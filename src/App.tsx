@@ -9,7 +9,9 @@ import { TasksDashboard } from "./components/TasksDashboard"
 import { useNotes } from "./hooks/useNotes"
 import { Plus, Settings, Book } from "lucide-react"
 import { SplashScreen } from "@capacitor/splash-screen"
+import { App as CapApp } from "@capacitor/app"
 import { AnimatePresence, motion } from "framer-motion"
+import { Capacitor } from "@capacitor/core"
 
 export default function App() {
   const { notes, addNote, deleteNote, updateNote, togglePin } = useNotes()
@@ -22,6 +24,30 @@ export default function App() {
   useEffect(() => {
     // Hide the splash screen smoothly once the app has mounted
     SplashScreen.hide().catch(() => {});
+
+    // Check for updates
+    const checkForUpdate = async () => {
+      try {
+        if (!Capacitor.isNativePlatform()) return
+        
+        const info = await CapApp.getInfo()
+        
+        const res = await fetch("https://raw.githubusercontent.com/Shivjeet1/my-notes-app/master/version.json").catch(() => null)
+        if (res && res.ok) {
+          const data = await res.json()
+          if (data.version && data.version !== info.version) {
+            const wantUpdate = window.confirm(`A new version (${data.version}) is available! Would you like to download it?`)
+            if (wantUpdate && data.downloadUrl) {
+              window.open(data.downloadUrl, "_blank")
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Update check failed", e)
+      }
+    }
+    
+    checkForUpdate()
   }, [])
 
   const filteredNotes = notes.filter(

@@ -39,11 +39,30 @@ jobs:
       - name: Sync Capacitor Android
         run: npx cap sync android
 
+      - name: Decode Keystore
+        working-directory: ./android/app
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > release.keystore
+          else
+            echo "Warning: KEYSTORE_BASE64 secret is not set! Falling back to debug build."
+          fi
+
       - name: Build Release APK
         working-directory: ./android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          if [ -f "app/release.keystore" ]; then
+            ./gradlew assembleRelease
+          else
+            ./gradlew assembleDebug
+          fi
 
       - name: Rename APK
         run: |
@@ -55,15 +74,20 @@ jobs:
             VERSION="${GITHUB_REF_NAME#v}"
           fi
 
-          cd android/app/build/outputs/apk/debug/
-          mv *.apk "${APP_NAME}_${VERSION}_android_release.apk"
+          if [ -f android/app/build/outputs/apk/release/app-release.apk ]; then
+            cd android/app/build/outputs/apk/release/
+            mv app-release.apk "${APP_NAME}_${VERSION}_android_release.apk"
+          else
+            cd android/app/build/outputs/apk/debug/
+            mv app-debug.apk "${APP_NAME}_${VERSION}_android_debug.apk"
+          fi
 
       - name: Upload APK as Workflow Artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: manual-build-apk
-          path: android/app/build/outputs/apk/debug/*_android_release.apk
+          path: android/app/build/outputs/apk/*/*_android_*.apk
           retention-days: 7
 
       - name: Upload APK to GitHub Release
@@ -73,4 +97,4 @@ jobs:
           name: "Release ${{ github.ref_name }}"
           tag_name: ${{ github.ref_name }}
           files: |
-            android/app/build/outputs/apk/debug/my-notes-app_*_android_release.apk
+            android/app/build/outputs/apk/*/*_android_*.apk
