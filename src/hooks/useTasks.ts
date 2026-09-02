@@ -34,9 +34,5 @@ export function useTasks() {
     setTasks(tasks.map((task) => (task.id === id ? { ...task, text } : task)))
   }
 
-  const restoreTasks = (importedTasks: Task[]) => {
-    setTasks(importedTasks)
-  }
-
-  return { tasks, addTask, deleteTask, toggleTask, updateTask, restoreTasks }
+  return { tasks, addTask, deleteTask, toggleTask, updateTask }
 }

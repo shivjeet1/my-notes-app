@@ -2,6 +2,7 @@ import { X, Moon, Sun, Download, Upload } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
 import { useNotes } from "../hooks/useNotes"
 import { useTasks } from "../hooks/useTasks"
+import { saveNotes, saveTasks } from "../utils/storage"
 import { useRef } from "react"
 import type { Note } from "../types/Note"
 import type { Task } from "../types/Task"
@@ -15,8 +16,8 @@ interface SettingsPanelProps {
 
 export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const { theme, toggleTheme } = useTheme()
-  const { notes, restoreNotes } = useNotes()
-  const { tasks, restoreTasks } = useTasks()
+  const { notes } = useNotes()
+  const { tasks } = useTasks()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleBackup = async () => {
@@ -76,16 +77,18 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         if (Array.isArray(json)) {
           // Legacy format
           if (json.every(n => n.id && typeof n.title === 'string' && typeof n.content === 'string')) {
-            restoreNotes(json as Note[])
-            alert("Notes restored successfully!")
+            saveNotes(json as Note[])
+            alert("Notes restored successfully! The app will now reload.")
+            window.location.reload()
           } else {
             alert("Invalid legacy backup format.")
           }
         } else if (json && json.version === 2) {
           // New format
-          if (Array.isArray(json.notes)) restoreNotes(json.notes)
-          if (Array.isArray(json.tasks)) restoreTasks(json.tasks)
-          alert("Backup restored successfully!")
+          if (Array.isArray(json.notes)) saveNotes(json.notes)
+          if (Array.isArray(json.tasks)) saveTasks(json.tasks)
+          alert("Backup restored successfully! The app will now reload.")
+          window.location.reload()
         } else {
           alert("Unrecognized backup file format.")
         }
