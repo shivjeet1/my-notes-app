@@ -1,8 +1,10 @@
 import { X, Moon, Sun, Download, Upload } from "lucide-react"
 import { useTheme } from "./ThemeProvider"
 import { useNotes } from "../hooks/useNotes"
+import { useTasks } from "../hooks/useTasks"
 import { useRef } from "react"
 import type { Note } from "../types/Note"
+import type { Task } from "../types/Task"
 import { Capacitor } from "@capacitor/core"
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
 import { motion } from "framer-motion"
@@ -14,11 +16,17 @@ interface SettingsPanelProps {
 export function SettingsPanel({ onClose }: SettingsPanelProps) {
   const { theme, toggleTheme } = useTheme()
   const { notes, restoreNotes } = useNotes()
+  const { tasks, restoreTasks } = useTasks()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleBackup = async () => {
     try {
-      const jsonStr = JSON.stringify(notes, null, 2)
+      const backupData = {
+        version: 2,
+        notes,
+        tasks
+      }
+      const jsonStr = JSON.stringify(backupData, null, 2)
       const fileName = `my-notes-backup-${new Date().toISOString().split('T')[0]}.json`
 
       if (Capacitor.isNativePlatform()) {
@@ -52,7 +60,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         URL.revokeObjectURL(url)
       }
     } catch (e) {
-      alert("Failed to backup notes: " + e)
+      alert("Failed to backup data: " + e)
     }
   }
 
@@ -63,12 +71,23 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
     const reader = new FileReader()
     reader.onload = (event) => {
       try {
-        const json = JSON.parse(event.target?.result as string) as Note[]
-        if (Array.isArray(json) && json.every(n => n.id && typeof n.title === 'string' && typeof n.content === 'string')) {
-          restoreNotes(json)
-          alert("Notes restored successfully!")
+        const json = JSON.parse(event.target?.result as string)
+        
+        if (Array.isArray(json)) {
+          // Legacy format
+          if (json.every(n => n.id && typeof n.title === 'string' && typeof n.content === 'string')) {
+            restoreNotes(json as Note[])
+            alert("Notes restored successfully!")
+          } else {
+            alert("Invalid legacy backup format.")
+          }
+        } else if (json && json.version === 2) {
+          // New format
+          if (Array.isArray(json.notes)) restoreNotes(json.notes)
+          if (Array.isArray(json.tasks)) restoreTasks(json.tasks)
+          alert("Backup restored successfully!")
         } else {
-          alert("Invalid backup file format.")
+          alert("Unrecognized backup file format.")
         }
       } catch (error) {
         alert("Failed to parse backup file.")

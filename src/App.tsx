@@ -5,8 +5,9 @@ import { NotesList } from "./components/NotesList"
 import { NoteEditor } from "./components/NoteEditor"
 import { SearchBar } from "./components/SearchBar"
 import { SettingsPanel } from "./components/SettingsPanel"
+import { TasksDashboard } from "./components/TasksDashboard"
 import { useNotes } from "./hooks/useNotes"
-import { Plus, Settings } from "lucide-react"
+import { Plus, Settings, Book } from "lucide-react"
 import { SplashScreen } from "@capacitor/splash-screen"
 import { AnimatePresence, motion } from "framer-motion"
 
@@ -16,6 +17,7 @@ export default function App() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showEditor, setShowEditor] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showTasks, setShowTasks] = useState(false)
 
   useEffect(() => {
     // Hide the splash screen smoothly once the app has mounted
@@ -73,6 +75,17 @@ export default function App() {
             />
           </motion.div>
         )}
+        {showTasks && (
+          <motion.div
+            initial={{ y: "100%", opacity: 0.5 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0.5 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="absolute inset-0 z-20 bg-gray-50 dark:bg-zinc-950"
+          >
+            <TasksDashboard onClose={() => setShowTasks(false)} />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <div className="h-screen overflow-y-auto pb-32">
@@ -103,6 +116,16 @@ export default function App() {
           )}
         </div>
       </div>
+
+      <motion.button
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowTasks(true)}
+        className="fixed bottom-[7.5rem] right-8 w-16 h-16 rounded-2xl bg-purple-500 text-white flex items-center justify-center shadow-lg hover:bg-purple-600 z-10"
+        aria-label="Open Tasks"
+        style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <Book size={24} />
+      </motion.button>
 
       <motion.button
         whileTap={{ scale: 0.9 }}
