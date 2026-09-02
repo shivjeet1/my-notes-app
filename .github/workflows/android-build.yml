@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,30 +34,43 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+          cache: gradle
 
       - name: Sync Capacitor Android
         run: npx cap sync android
 
       - name: Build Release APK
+        working-directory: ./android
         run: |
-          cd android
-          ./gradlew clean
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Rename APK
         run: |
           APP_NAME="my-notes-app"
-          VERSION="${GITHUB_REF_NAME#v}"
+          
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="manual-${GITHUB_REF_NAME}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
 
           cd android/app/build/outputs/apk/debug/
           mv *.apk "${APP_NAME}_${VERSION}_android_release.apk"
 
+      - name: Upload APK as Workflow Artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-build-apk
+          path: android/app/build/outputs/apk/debug/*_android_release.apk
+          retention-days: 7
+
       - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: "Release ${{ github.ref_name }}"
           tag_name: ${{ github.ref_name }}
           files: |
             android/app/build/outputs/apk/debug/my-notes-app_*_android_release.apk
-
-
