@@ -4,6 +4,7 @@ import type { Note } from "../types/Note"
 import { getColorForNote } from "../utils/colorPalette"
 import { Trash2, Pin } from "lucide-react"
 import { ConfirmDialog } from "./ConfirmDialog"
+import { motion, PanInfo } from "framer-motion"
 
 
 interface NoteCardProps {
@@ -52,8 +53,19 @@ const clearPressTimer = () => {
 
   return (
   <>
-    <div
-      className="rounded-2xl p-4 cursor-pointer transition-all hover:shadow-lg active:scale-95"
+    <motion.div
+      whileTap={{ scale: 0.98 }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.5}
+      onDragEnd={(e, info: PanInfo) => {
+        if (info.offset.x < -100) {
+          setConfirmDelete(true)
+        } else if (info.offset.x > 100) {
+          onTogglePin()
+        }
+      }}
+      className="rounded-2xl p-4 cursor-pointer transition-shadow hover:shadow-lg relative overflow-hidden"
       style={{ backgroundColor: bgColor }}
       onClick={() => {
         setMenuOpen(false)
@@ -151,7 +163,7 @@ const clearPressTimer = () => {
         </div>
       </div>
       }
-    </div>
+    </motion.div>
       <ConfirmDialog
         open={confirmDelete}
         title="Delete note?"

@@ -8,6 +8,7 @@ import { SettingsPanel } from "./components/SettingsPanel"
 import { useNotes } from "./hooks/useNotes"
 import { Plus, Settings } from "lucide-react"
 import { SplashScreen } from "@capacitor/splash-screen"
+import { AnimatePresence, motion } from "framer-motion"
 
 export default function App() {
   const { notes, addNote, deleteNote, updateNote, togglePin } = useNotes()
@@ -55,23 +56,32 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-white transition-colors duration-300">
-      {showEditor && (
-        <div className="animate-fade-in absolute inset-0 z-10 bg-white dark:bg-black">
-          <NoteEditor
-            note={editingId ? notes.find((n) => n.id === editingId) : undefined}
-            onSave={handleAddNote}
-            onCancel={handleCloseEditor}
-          />
-        </div>
-      )}
-      <div className={showEditor ? "hidden" : "block animate-fade-in"}>
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden relative" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <AnimatePresence>
+        {showEditor && (
+          <motion.div
+            initial={{ y: "100%", opacity: 0.5 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0.5 }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="absolute inset-0 z-20 bg-gray-50 dark:bg-zinc-950"
+          >
+            <NoteEditor
+              note={editingId ? notes.find((n) => n.id === editingId) : undefined}
+              onSave={handleAddNote}
+              onCancel={handleCloseEditor}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="h-screen overflow-y-auto pb-32">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-4xl font-bold text-blue-500">My Notes</h1>
             <button
               onClick={() => setShowSettings(true)}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
               aria-label="Settings"
             >
               <Settings size={24} />
@@ -83,7 +93,7 @@ export default function App() {
           />
         </div>
 
-        <div className="px-6 pb-32">
+        <div className="px-6">
           {sortedNotes.length === 0 ? (
             <div className="text-center py-12 text-gray-500 dark:text-gray-400">
               {searchQuery ? "No notes found" : "No notes yet. Create one to get started!"}
@@ -92,15 +102,17 @@ export default function App() {
             <NotesList notes={sortedNotes} onEdit={handleEditNote} onDelete={deleteNote} onTogglePin={togglePin} />
           )}
         </div>
-
-        <button
-          onClick={() => setShowEditor(true)}
-          className="fixed bottom-8 right-8 w-16 h-16 rounded-2xl bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 transition-transform hover:scale-105 active:scale-95"
-          aria-label="Create new note"
-        >
-          <Plus size={24} />
-        </button>
       </div>
+
+      <motion.button
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setShowEditor(true)}
+        className="fixed bottom-8 right-8 w-16 h-16 rounded-2xl bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 z-10"
+        aria-label="Create new note"
+        style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
+      >
+        <Plus size={24} />
+      </motion.button>
       
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
