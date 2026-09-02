@@ -114,7 +114,9 @@ export default function App() {
         <Plus size={24} />
       </motion.button>
       
-      {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      <AnimatePresence>
+        {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
+      </AnimatePresence>
     </div>
   )
 }

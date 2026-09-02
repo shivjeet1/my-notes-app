@@ -35,7 +35,13 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white p-6 flex flex-col transition-colors duration-300">
+    <div 
+      className="h-full bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white p-6 flex flex-col transition-colors duration-300"
+      style={{
+        paddingTop: 'calc(1.5rem + env(safe-area-inset-top))',
+        paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))'
+      }}
+    >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <button

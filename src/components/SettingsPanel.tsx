@@ -5,6 +5,7 @@ import { useRef } from "react"
 import type { Note } from "../types/Note"
 import { Capacitor } from "@capacitor/core"
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem"
+import { motion } from "framer-motion"
 
 interface SettingsPanelProps {
   onClose: () => void
@@ -79,8 +80,22 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center animate-fade-in bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-900 w-full sm:w-[400px] h-[80vh] sm:h-auto sm:max-h-[80vh] rounded-t-2xl sm:rounded-2xl p-6 flex flex-col shadow-2xl animate-slide-up sm:animate-scale-in text-gray-900 dark:text-white">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div 
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-zinc-900 w-full sm:w-[400px] h-[80vh] sm:h-auto sm:max-h-[80vh] rounded-t-3xl sm:rounded-2xl p-6 flex flex-col shadow-2xl text-gray-900 dark:text-white"
+        style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }}
+      >
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold">Settings</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
@@ -141,7 +156,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             </div>
           </section>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }
