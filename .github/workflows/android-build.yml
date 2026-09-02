@@ -39,6 +39,11 @@ jobs:
       - name: Sync Capacitor Android
         run: npx cap sync android
 
+      # Kotlin compiler version to match the 2.1.0 stdlib
+      - name: Patch Kotlin Version for Capacitor
+        run: |
+          sed -i "s/kotlin_version = '[0-9.]*'/kotlin_version = '2.1.0'/g" android/variables.gradle
+
       - name: Build Release APK
         working-directory: ./android
         run: |
