@@ -115,7 +115,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-zinc-900 w-full sm:w-[400px] h-[80vh] sm:h-auto sm:max-h-[80vh] rounded-t-3xl sm:rounded-2xl p-6 flex flex-col shadow-2xl text-gray-900 dark:text-white"
+        className="bg-white/80 dark:bg-black/80 backdrop-blur-xl border border-white/20 dark:border-white/10 w-full sm:w-[400px] h-[80vh] sm:h-auto sm:max-h-[80vh] rounded-t-3xl sm:rounded-2xl p-6 flex flex-col shadow-2xl text-gray-900 dark:text-white"
         style={{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))' }}
       >
         <div className="flex items-center justify-between mb-8">
@@ -129,7 +129,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
           {/* Theme Section */}
           <section>
             <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Appearance</h3>
-            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-xl">
               <div className="flex items-center gap-3">
                 {theme === "dark" ? <Moon size={20} className="text-blue-500" /> : <Sun size={20} className="text-orange-500" />}
                 <span className="font-medium">Dark Mode</span>
@@ -149,7 +149,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
             <div className="space-y-3">
               <button
                 onClick={handleBackup}
-                className="w-full flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="w-full flex items-center gap-3 p-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Download size={20} className="text-green-500" />
                 <div className="text-left">
@@ -160,7 +160,7 @@ export function SettingsPanel({ onClose }: SettingsPanelProps) {
 
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="w-full flex items-center gap-3 p-4 bg-gray-50/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
               >
                 <Upload size={20} className="text-blue-500" />
                 <div className="text-left">

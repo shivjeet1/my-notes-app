@@ -84,7 +84,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden relative" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden relative" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <AnimatePresence>
         {showEditor && (
           <motion.div
@@ -92,7 +92,7 @@ export default function App() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0.5 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="absolute inset-0 z-20 bg-gray-50 dark:bg-zinc-950"
+            className="absolute inset-0 z-20 bg-transparent"
           >
             <NoteEditor
               note={editingId ? notes.find((n) => n.id === editingId) : undefined}
@@ -107,7 +107,7 @@ export default function App() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0.5 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="absolute inset-0 z-20 bg-gray-50 dark:bg-zinc-950"
+            className="absolute inset-0 z-20 bg-transparent"
           >
             <TasksDashboard onClose={() => setShowTasks(false)} />
           </motion.div>
@@ -146,7 +146,7 @@ export default function App() {
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={() => setShowTasks(true)}
-        className="fixed bottom-[7.5rem] right-8 w-16 h-16 rounded-2xl bg-purple-500 text-white flex items-center justify-center shadow-lg hover:bg-purple-600 z-10"
+        className="fixed bottom-[7.5rem] right-8 w-16 h-16 rounded-2xl bg-purple-500/80 backdrop-blur-md border border-white/20 dark:border-white/10 text-white flex items-center justify-center shadow-lg hover:bg-purple-600/90 z-10"
         aria-label="Open Tasks"
         style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
       >
@@ -156,7 +156,7 @@ export default function App() {
       <motion.button
         whileTap={{ scale: 0.9 }}
         onClick={() => setShowEditor(true)}
-        className="fixed bottom-8 right-8 w-16 h-16 rounded-2xl bg-blue-500 text-white flex items-center justify-center shadow-lg hover:bg-blue-600 z-10"
+        className="fixed bottom-8 right-8 w-16 h-16 rounded-2xl bg-blue-500/80 backdrop-blur-md border border-white/20 dark:border-white/10 text-white flex items-center justify-center shadow-lg hover:bg-blue-600/90 z-10"
         aria-label="Create new note"
         style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
       >

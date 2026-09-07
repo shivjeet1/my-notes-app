@@ -65,8 +65,8 @@ const clearPressTimer = () => {
           onTogglePin()
         }
       }}
-      className="rounded-2xl p-4 cursor-pointer transition-shadow hover:shadow-lg relative overflow-hidden"
-      style={{ backgroundColor: bgColor }}
+      className="rounded-2xl p-4 cursor-pointer transition-shadow hover:shadow-lg relative overflow-hidden border border-white/40 dark:border-white/10 shadow-sm"
+      style={{ backgroundColor: bgColor + 'CC' }}
       onClick={() => {
         setMenuOpen(false)
         onEdit()

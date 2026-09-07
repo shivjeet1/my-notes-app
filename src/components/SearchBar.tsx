@@ -17,7 +17,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label="Search Notes"
-        className="w-full bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-full py-3 pl-12 pr-4 outline-none transition-all focus:ring-2 focus:ring-blue-500"
+        className="w-full bg-gray-200/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 rounded-full py-3 pl-12 pr-4 outline-none transition-all focus:ring-2 focus:ring-blue-500"
       />
       {value && (
         <button

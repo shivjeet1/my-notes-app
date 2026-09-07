@@ -23,7 +23,7 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
 
   return (
     <div 
-      className="h-full bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white flex flex-col transition-colors duration-300"
+      className="h-full bg-gray-50/80 dark:bg-black/80 backdrop-blur-xl text-gray-900 dark:text-white flex flex-col transition-colors duration-300"
       style={{
         paddingTop: 'calc(1.5rem + env(safe-area-inset-top))',
         paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))'
@@ -48,7 +48,7 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
           placeholder="Add a new task..."
           value={newTaskText}
           onChange={(e) => setNewTaskText(e.target.value)}
-          className="flex-1 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
+          className="flex-1 bg-white/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
         />
         <button
           type="submit"
@@ -82,7 +82,7 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
                       setTaskToDelete(task.id)
                     }
                   }}
-                  className={`bg-white dark:bg-zinc-900 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-zinc-800 flex items-center gap-3 transition-opacity ${
+                  className={`bg-white/50 dark:bg-white/5 p-4 rounded-xl shadow-sm border border-white/40 dark:border-white/10 flex items-center gap-3 transition-opacity ${
                     task.completed ? "opacity-60" : "opacity-100"
                   }`}
                 >

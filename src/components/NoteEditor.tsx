@@ -36,7 +36,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
 
   return (
     <div 
-      className="h-full bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-white p-6 flex flex-col transition-colors duration-300"
+      className="h-full bg-gray-50/80 dark:bg-black/80 backdrop-blur-xl text-gray-900 dark:text-white p-6 flex flex-col transition-colors duration-300"
       style={{
         paddingTop: 'calc(1.5rem + env(safe-area-inset-top))',
         paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))'
