@@ -27,9 +27,15 @@ android {
     signingConfigs {
         release {
             storeFile file("release.keystore")
-            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "password"
-            keyAlias System.getenv("KEY_ALIAS") ?: "my-key-alias"
-            keyPassword System.getenv("KEY_PASSWORD") ?: "password"
+            
+            def getPassword = { envKey, defaultVal ->
+                def val = System.getenv(envKey)
+                return (val != null && !val.trim().isEmpty()) ? val : defaultVal
+            }
+
+            storePassword getPassword("KEYSTORE_PASSWORD", "password")
+            keyAlias getPassword("KEY_ALIAS", "my-key-alias")
+            keyPassword getPassword("KEY_PASSWORD", "password")
         }
     }
     buildTypes {
