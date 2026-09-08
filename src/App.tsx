@@ -7,7 +7,7 @@ import { SearchBar } from "./components/SearchBar"
 import { SettingsPanel } from "./components/SettingsPanel"
 import { TasksDashboard } from "./components/TasksDashboard"
 import { useNotes } from "./hooks/useNotes"
-import { Plus, Settings, Book } from "lucide-react"
+import { Plus, Settings, Book, LayoutGrid, List } from "lucide-react"
 import { SplashScreen } from "@capacitor/splash-screen"
 import { App as CapApp } from "@capacitor/app"
 import { AnimatePresence, motion } from "framer-motion"
@@ -20,7 +20,11 @@ export default function App() {
   const [showEditor, setShowEditor] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showTasks, setShowTasks] = useState(false)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => (localStorage.getItem('viewMode') as 'grid' | 'list') || 'grid')
 
+  useEffect(() => {
+    localStorage.setItem('viewMode', viewMode)
+  }, [viewMode])
   useEffect(() => {
     // Hide the splash screen smoothly once the app has mounted
     SplashScreen.hide().catch(() => {});
@@ -118,13 +122,22 @@ export default function App() {
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-4xl font-bold text-blue-500">My Notes</h1>
-            <button
-              onClick={() => setShowSettings(true)}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
-              aria-label="Settings"
-            >
-              <Settings size={24} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
+                aria-label="Toggle View"
+              >
+                {viewMode === 'grid' ? <List size={24} /> : <LayoutGrid size={24} />}
+              </button>
+              <button
+                onClick={() => setShowSettings(true)}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
+                aria-label="Settings"
+              >
+                <Settings size={24} />
+              </button>
+            </div>
           </div>
           <SearchBar
             value={searchQuery}
@@ -138,7 +151,7 @@ export default function App() {
               {searchQuery ? "No notes found" : "No notes yet. Create one to get started!"}
             </div>
           ) : (
-            <NotesList notes={sortedNotes} onEdit={handleEditNote} onDelete={deleteNote} onTogglePin={togglePin} />
+            <NotesList notes={sortedNotes} onEdit={handleEditNote} onDelete={deleteNote} onTogglePin={togglePin} viewMode={viewMode} />
           )}
         </div>
       </div>

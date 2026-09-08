@@ -7,6 +7,7 @@ interface NotesListProps {
   onEdit: (id: string) => void
   onDelete: (id: string) => void
   onTogglePin: (id: string) => void
+  viewMode?: 'grid' | 'list'
 }
 
 export function NotesList({
@@ -14,14 +15,15 @@ export function NotesList({
   onEdit,
   onDelete,
   onTogglePin,
+  viewMode = 'grid'
 }: NotesListProps){
   return (
-    <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+    <div className={viewMode === 'grid' ? "columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4" : "flex flex-col gap-4"}>
       <AnimatePresence>
         {notes.map((note) => (
           <motion.div 
             key={note.id} 
-            className="break-inside-avoid"
+            className={viewMode === 'grid' ? "break-inside-avoid" : "w-full"}
             layout
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
