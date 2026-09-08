@@ -3,4 +3,5 @@ export interface Task {
   text: string
   completed: boolean
   createdAt: string
+  dueDate?: string
 }

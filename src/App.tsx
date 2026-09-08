@@ -14,7 +14,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Capacitor } from "@capacitor/core"
 
 export default function App() {
-  const { notes, addNote, deleteNote, updateNote, togglePin } = useNotes()
+  const { notes, addNote, deleteNote, updateNote, togglePin, reorderNotes } = useNotes()
   const [searchQuery, setSearchQuery] = useState("")
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showEditor, setShowEditor] = useState(false)
@@ -61,18 +61,16 @@ export default function App() {
   )
 
   const sortedNotes = [...filteredNotes].sort((a, b) => {
-    if (a.pinned === b.pinned) {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    }
+    if (a.pinned === b.pinned) return 0
     return a.pinned ? -1 : 1
   })
 
-  const handleAddNote = (title: string, content: string) => {
+  const handleAddNote = (title: string, content: string, color?: string) => {
     if (editingId) {
-      updateNote(editingId, { title, content })
+      updateNote(editingId, { title, content, color })
       setEditingId(null)
     } else {
-      addNote(title, content)
+      addNote(title, content, color)
     }
     setShowEditor(false)
   }
@@ -151,7 +149,14 @@ export default function App() {
               {searchQuery ? "No notes found" : "No notes yet. Create one to get started!"}
             </div>
           ) : (
-            <NotesList notes={sortedNotes} onEdit={handleEditNote} onDelete={deleteNote} onTogglePin={togglePin} viewMode={viewMode} />
+            <NotesList 
+              notes={sortedNotes} 
+              onEdit={handleEditNote} 
+              onDelete={deleteNote} 
+              onTogglePin={togglePin} 
+              viewMode={viewMode} 
+              onReorder={(newOrder) => { if (!searchQuery) reorderNotes(newOrder) }} 
+            />
           )}
         </div>
       </div>

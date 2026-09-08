@@ -12,12 +12,13 @@ export function useNotes() {
     saveNotes(notes)
   }, [notes])
 
-  const addNote = (title: string, content: string) => {
+  const addNote = (title: string, content: string, color?: string) => {
     const newNote: Note = {
       id: Date.now().toString(),
       title,
       content,
       createdAt: new Date().toISOString(),
+      color,
       pinned: false,
     }
     setNotes([newNote, ...notes])
@@ -35,5 +36,6 @@ export function useNotes() {
     setNotes(notes.map((note) => (note.id === id ? { ...note, pinned: !note.pinned } : note)))
   }
 
-  return { notes, addNote, deleteNote, updateNote, togglePin }
+  const reorderNotes = (newOrder: Note[]) => { setNotes(newOrder) }
+  return { notes, addNote, deleteNote, updateNote, togglePin, reorderNotes }
 }

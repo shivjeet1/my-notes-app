@@ -3,5 +3,6 @@ export interface Note {
   title: string
   content: string
   createdAt: string
+  color?: string
   pinned: boolean
 }

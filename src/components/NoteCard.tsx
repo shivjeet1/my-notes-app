@@ -4,6 +4,7 @@ import type { Note } from "../types/Note"
 import { getColorForNote } from "../utils/colorPalette"
 import { Trash2, Pin } from "lucide-react"
 import { ConfirmDialog } from "./ConfirmDialog"
+import ReactMarkdown from "react-markdown"
 import { motion, PanInfo } from "framer-motion"
 
 
@@ -20,7 +21,7 @@ export function NoteCard({
   onDelete,
   onTogglePin,
 }: NoteCardProps) {
-const bgColor = getColorForNote(note.id)
+const bgColor = note.color || getColorForNote(note.id)
 const textColor = getTextColorForBg(bgColor)
 const isTouchDevice =
   typeof window !== "undefined" &&
@@ -137,11 +138,15 @@ const clearPressTimer = () => {
         </div>
 
         {/* BODY */}
-        <p
-          className={`text-sm ${textColor} opacity-80 break-words line-clamp-4`}
+        <div
+          className={`text-sm ${textColor} opacity-80 break-words line-clamp-4 prose prose-sm dark:prose-invert max-w-none prose-p:my-0 prose-headings:my-0 prose-ul:my-0`}
         >
-          {note.content?.trim() || "No additional notes"}
-        </p>
+          {note.content?.trim() ? (
+            <ReactMarkdown>{note.content}</ReactMarkdown>
+          ) : (
+            "No additional notes"
+          )}
+        </div>
 
         {/* FOOTER */}
         <div className="mt-auto flex items-center justify-between pt-2">

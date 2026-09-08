@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { motion, AnimatePresence, PanInfo } from "framer-motion"
+import { motion, AnimatePresence, PanInfo, Reorder } from "framer-motion"
 import { ChevronLeft, Plus, Trash2, CheckCircle2, Circle } from "lucide-react"
 import { useTasks } from "../hooks/useTasks"
 import { ConfirmDialog } from "./ConfirmDialog"
@@ -9,15 +9,17 @@ interface TasksDashboardProps {
 }
 
 export function TasksDashboard({ onClose }: TasksDashboardProps) {
-  const { tasks, addTask, toggleTask, deleteTask, updateTask } = useTasks()
+  const { tasks, addTask, toggleTask, deleteTask, updateTask, reorderTasks } = useTasks()
   const [newTaskText, setNewTaskText] = useState("")
+  const [newTaskDate, setNewTaskDate] = useState("")
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null)
 
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault()
     if (newTaskText.trim()) {
-      addTask(newTaskText.trim())
+      addTask(newTaskText.trim(), newTaskDate || undefined)
       setNewTaskText("")
+      setNewTaskDate("")
     }
   }
 
@@ -42,21 +44,32 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
         </div>
       </div>
 
-      <form onSubmit={handleAddTask} className="px-6 mb-6 flex gap-3">
-        <input
-          type="text"
-          placeholder="Add a new task..."
-          value={newTaskText}
-          onChange={(e) => setNewTaskText(e.target.value)}
-          className="flex-1 bg-white/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
-        />
-        <button
-          type="submit"
-          disabled={!newTaskText.trim()}
-          className="bg-blue-500 text-white rounded-xl px-4 py-3 disabled:opacity-50 hover:bg-blue-600 transition-colors"
-        >
-          <Plus size={24} />
-        </button>
+      <form onSubmit={handleAddTask} className="px-6 mb-6 flex flex-col gap-3">
+        <div className="flex gap-3">
+          <input
+            type="text"
+            placeholder="Add a new task..."
+            value={newTaskText}
+            onChange={(e) => setNewTaskText(e.target.value)}
+            className="flex-1 bg-white/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
+          />
+          <button
+            type="submit"
+            disabled={!newTaskText.trim()}
+            className="bg-blue-500 text-white rounded-xl px-4 py-3 disabled:opacity-50 hover:bg-blue-600 transition-colors"
+          >
+            <Plus size={24} />
+          </button>
+        </div>
+        <div className="flex gap-2 items-center text-sm text-gray-500 dark:text-gray-400">
+          <input 
+            type="datetime-local" 
+            value={newTaskDate} 
+            onChange={(e) => setNewTaskDate(e.target.value)}
+            className="bg-transparent border border-gray-200 dark:border-white/10 rounded-lg px-2 py-1 outline-none focus:border-blue-500"
+          />
+          <span>(Optional) Reminder</span>
+        </div>
       </form>
 
       <div className="flex-1 overflow-y-auto px-6 pb-20">
@@ -65,10 +78,10 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
             No tasks yet. Create one above!
           </div>
         ) : (
-          <div className="space-y-3">
+          <Reorder.Group axis="y" values={tasks} onReorder={reorderTasks} className="space-y-3">
             <AnimatePresence>
               {tasks.map((task) => (
-                <motion.div
+                <Reorder.Item
                   key={task.id}
                   layout
                   initial={{ opacity: 0, y: 10 }}
@@ -92,24 +105,31 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
                   >
                     {task.completed ? <CheckCircle2 size={24} /> : <Circle size={24} />}
                   </button>
-                  <input
-                    type="text"
-                    value={task.text}
-                    onChange={(e) => updateTask(task.id, e.target.value)}
-                    className={`flex-1 bg-transparent outline-none ${
-                      task.completed ? "line-through text-gray-400" : ""
-                    }`}
-                  />
+                  <div className="flex-1 flex flex-col min-w-0">
+                    <input
+                      type="text"
+                      value={task.text}
+                      onChange={(e) => updateTask(task.id, e.target.value)}
+                      className={`bg-transparent outline-none w-full truncate ${
+                        task.completed ? "line-through text-gray-400" : ""
+                      }`}
+                    />
+                    {task.dueDate && (
+                      <span className={`text-xs mt-1 ${task.completed ? "text-gray-400" : "text-blue-500 dark:text-blue-400"}`}>
+                        Due: {new Date(task.dueDate).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                      </span>
+                    )}
+                  </div>
                   <button
                     onClick={() => setTaskToDelete(task.id)}
                     className="text-gray-400 hover:text-red-500 transition-colors"
                   >
                     <Trash2 size={20} />
                   </button>
-                </motion.div>
+                </Reorder.Item>
               ))}
             </AnimatePresence>
-          </div>
+          </Reorder.Group>
         )}
       </div>
 
