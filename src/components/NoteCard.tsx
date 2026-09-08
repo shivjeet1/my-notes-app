@@ -2,7 +2,7 @@
 import { useState, useRef } from "react"
 import type { Note } from "../types/Note"
 import { getColorForNote } from "../utils/colorPalette"
-import { Trash2, Pin } from "lucide-react"
+import { Trash2, Pin, GripVertical } from "lucide-react"
 import { ConfirmDialog } from "./ConfirmDialog"
 import ReactMarkdown from "react-markdown"
 import { motion, PanInfo } from "framer-motion"
@@ -13,6 +13,7 @@ interface NoteCardProps {
   onEdit: () => void
   onDelete: () => void
   onTogglePin: () => void
+  dragControls?: any
 }
 
 export function NoteCard({
@@ -20,6 +21,7 @@ export function NoteCard({
   onEdit,
   onDelete,
   onTogglePin,
+  dragControls,
 }: NoteCardProps) {
 const bgColor = note.color || getColorForNote(note.id)
 const textColor = getTextColorForBg(bgColor)
@@ -56,7 +58,7 @@ const clearPressTimer = () => {
   <>
     <motion.div
       whileTap={{ scale: 0.98 }}
-      drag="x"
+      drag={isTouchDevice ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.5}
       onDragEnd={(e, info: PanInfo) => {
@@ -122,19 +124,30 @@ const clearPressTimer = () => {
             {note.title?.trim() || "Untitled"}
           </h3>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onTogglePin()
-            }}
-            className={`flex-shrink-0 ${
-              note.pinned ? "text-yellow-400" : "opacity-60"
-            }`}
-            title={note.pinned ? "Unpin note" : "Pin note"}
-            aria-label={note.pinned ? "Unpin note" : "Pin note"}
-          >
-            <Pin size={16} fill={note.pinned ? "currentColor" : "none"} />
-          </button>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {dragControls && (
+              <div 
+                className={`cursor-grab active:cursor-grabbing p-1 opacity-50 hover:opacity-100 transition-opacity ${textColor}`}
+                onPointerDown={(e) => dragControls.start(e)}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GripVertical size={20} />
+              </div>
+            )}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onTogglePin()
+              }}
+              className={`flex-shrink-0 ${
+                note.pinned ? "text-yellow-400" : "opacity-60"
+              }`}
+              title={note.pinned ? "Unpin note" : "Pin note"}
+              aria-label={note.pinned ? "Unpin note" : "Pin note"}
+            >
+              <Pin size={16} fill={note.pinned ? "currentColor" : "none"} />
+            </button>
+          </div>
         </div>
 
         {/* BODY */}
