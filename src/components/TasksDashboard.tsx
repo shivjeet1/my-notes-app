@@ -17,7 +17,7 @@ const TaskItem = ({ task, toggleTask, updateTask, setTaskToDelete }: any) => {
       value={task}
       layout
       initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ opacity: 1, y: 0, scale: 1, rotate: 0, zIndex: 1, boxShadow: "0 0px 0px 0px rgba(0,0,0,0)" }}
       exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
       dragListener={false}
       dragControls={controls}
