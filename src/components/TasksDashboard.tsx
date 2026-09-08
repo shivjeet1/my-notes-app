@@ -1,11 +1,71 @@
 import { useState } from "react"
 import { motion, AnimatePresence, PanInfo, Reorder } from "framer-motion"
-import { ChevronLeft, Plus, Trash2, CheckCircle2, Circle } from "lucide-react"
+import { ChevronLeft, Plus, Trash2, CheckCircle2, Circle, GripVertical } from "lucide-react"
+import { useDragControls } from "framer-motion"
 import { useTasks } from "../hooks/useTasks"
 import { ConfirmDialog } from "./ConfirmDialog"
 
 interface TasksDashboardProps {
   onClose: () => void
+}
+
+
+const TaskItem = ({ task, toggleTask, updateTask, setTaskToDelete }: any) => {
+  const controls = useDragControls()
+  return (
+    <Reorder.Item
+      value={task}
+      layout
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+      dragListener={false}
+      dragControls={controls}
+      drag={true}
+      whileDrag={{ 
+        scale: 1.02, 
+        zIndex: 50,
+        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)"
+      }}
+      className={`relative bg-white/50 dark:bg-white/5 p-4 rounded-xl shadow-sm border border-white/40 dark:border-white/10 flex items-center gap-3 transition-opacity ${
+        task.completed ? "opacity-60" : "opacity-100"
+      }`}
+    >
+      <div 
+        className="cursor-grab active:cursor-grabbing text-gray-400 p-1 -ml-2"
+        onPointerDown={(e) => controls.start(e)}
+      >
+        <GripVertical size={20} />
+      </div>
+      <button
+        onClick={() => toggleTask(task.id)}
+        className="flex-shrink-0 text-blue-500"
+      >
+        {task.completed ? <CheckCircle2 size={24} /> : <Circle size={24} />}
+      </button>
+      <div className="flex-1 flex flex-col min-w-0">
+        <input
+          type="text"
+          value={task.text}
+          onChange={(e) => updateTask(task.id, e.target.value)}
+          className={`bg-transparent outline-none w-full truncate ${
+            task.completed ? "line-through text-gray-400" : ""
+          }`}
+        />
+        {task.dueDate && (
+          <span className={`text-xs mt-1 ${task.completed ? "text-gray-400" : "text-blue-500 dark:text-blue-400"}`}>
+            Due: {new Date(task.dueDate).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+          </span>
+        )}
+      </div>
+      <button
+        onClick={() => setTaskToDelete(task.id)}
+        className="text-gray-400 hover:text-red-500 transition-colors"
+      >
+        <Trash2 size={20} />
+      </button>
+    </Reorder.Item>
+  )
 }
 
 export function TasksDashboard({ onClose }: TasksDashboardProps) {
@@ -81,52 +141,7 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
           <Reorder.Group axis="y" values={tasks} onReorder={reorderTasks} className="space-y-3">
             <AnimatePresence>
               {tasks.map((task) => (
-                <Reorder.Item
-                  key={task.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.5}
-                  onDragEnd={(e, info: PanInfo) => {
-                    if (info.offset.x < -100 || info.offset.x > 100) {
-                      setTaskToDelete(task.id)
-                    }
-                  }}
-                  className={`bg-white/50 dark:bg-white/5 p-4 rounded-xl shadow-sm border border-white/40 dark:border-white/10 flex items-center gap-3 transition-opacity ${
-                    task.completed ? "opacity-60" : "opacity-100"
-                  }`}
-                >
-                  <button
-                    onClick={() => toggleTask(task.id)}
-                    className="flex-shrink-0 text-blue-500"
-                  >
-                    {task.completed ? <CheckCircle2 size={24} /> : <Circle size={24} />}
-                  </button>
-                  <div className="flex-1 flex flex-col min-w-0">
-                    <input
-                      type="text"
-                      value={task.text}
-                      onChange={(e) => updateTask(task.id, e.target.value)}
-                      className={`bg-transparent outline-none w-full truncate ${
-                        task.completed ? "line-through text-gray-400" : ""
-                      }`}
-                    />
-                    {task.dueDate && (
-                      <span className={`text-xs mt-1 ${task.completed ? "text-gray-400" : "text-blue-500 dark:text-blue-400"}`}>
-                        Due: {new Date(task.dueDate).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setTaskToDelete(task.id)}
-                    className="text-gray-400 hover:text-red-500 transition-colors"
-                  >
-                    <Trash2 size={20} />
-                  </button>
-                </Reorder.Item>
+<TaskItem key={task.id} task={task} toggleTask={toggleTask} updateTask={updateTask} setTaskToDelete={setTaskToDelete} />
               ))}
             </AnimatePresence>
           </Reorder.Group>
