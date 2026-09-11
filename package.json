@@ -1,6 +1,6 @@
 {
   "name": "my-notes-app",
-  "version": "3.0.2",
+  "version": "3.5.0",
   "private": true,
   "scripts": {
     "dev": "vite",
