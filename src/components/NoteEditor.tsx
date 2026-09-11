@@ -76,17 +76,17 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         <input
           type="text"
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="text-3xl font-bold bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none mb-2 pb-4 border-b border-gray-200 dark:border-gray-600 focus:border-blue-500 transition-colors"
+          className="text-3xl font-bold bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none mb-2 pb-4 border-b border-gray-200 dark:border-gray-600 focus:border-blue-500 transition-colors flex-shrink-0"
         />
 
         
-        <div className="flex items-center gap-3 mb-4 overflow-x-auto py-2">
+        <div className="flex items-center gap-3 mb-4 overflow-x-auto py-2 flex-shrink-0">
           {PRESET_COLORS.map((c) => (
             <button
               key={c || "default"}
@@ -102,7 +102,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
           ))}
         </div>
 
-        <div className="flex items-center justify-between mt-4 mb-2">
+        <div className="flex items-center justify-between mt-4 mb-2 flex-shrink-0">
           <label className="text-gray-500 dark:text-gray-400 text-sm">Add Notes (Markdown Supported)</label>
           <button
             onClick={() => setIsPreview(!isPreview)}
@@ -112,7 +112,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
           </button>
         </div>
         {isPreview ? (
-          <div className="flex-1 overflow-y-auto bg-transparent text-gray-900 dark:text-white prose dark:prose-invert max-w-none">
+          <div className="flex-1 overflow-y-auto min-h-0 bg-transparent text-gray-900 dark:text-white prose dark:prose-invert max-w-none pb-8 pr-2">
             <ReactMarkdown>{content || "*No content*"}</ReactMarkdown>
           </div>
         ) : (
@@ -120,7 +120,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
             placeholder="Start typing..."
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none resize-none focus:ring-0"
+            className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none resize-none focus:ring-0 min-h-0"
           />
         )}
       </div>
