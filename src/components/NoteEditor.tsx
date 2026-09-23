@@ -80,7 +80,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
         <input
           type="text"
           placeholder="Title"
-          value={title}
+          defaultValue={title}
           onChange={(e) => setTitle(e.target.value)}
           className="text-3xl font-bold bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none mb-2 pb-4 border-b border-gray-200 dark:border-gray-600 focus:border-blue-500 transition-colors flex-shrink-0"
         />
@@ -118,7 +118,7 @@ export function NoteEditor({ note, onSave, onCancel }: NoteEditorProps) {
         ) : (
           <textarea
             placeholder="Start typing..."
-            value={content}
+            defaultValue={content}
             onChange={(e) => setContent(e.target.value)}
             className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none resize-none focus:ring-0 min-h-0"
           />

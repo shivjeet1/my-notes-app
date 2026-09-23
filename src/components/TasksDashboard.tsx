@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { motion, AnimatePresence, PanInfo, Reorder } from "framer-motion"
 import { ChevronLeft, Plus, Trash2, CheckCircle2, Circle, GripVertical } from "lucide-react"
 import { useDragControls } from "framer-motion"
@@ -46,7 +46,7 @@ const TaskItem = ({ task, toggleTask, updateTask, setTaskToDelete }: any) => {
       <div className="flex-1 flex flex-col min-w-0">
         <input
           type="text"
-          value={task.text}
+          defaultValue={task.text}
           onChange={(e) => updateTask(task.id, e.target.value)}
           className={`bg-transparent outline-none w-full truncate ${
             task.completed ? "line-through text-gray-400" : ""
@@ -74,12 +74,15 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
   const [newTaskDate, setNewTaskDate] = useState("")
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null)
 
+  const newTaskInputRef = useRef<HTMLInputElement>(null)
+
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault()
     if (newTaskText.trim()) {
       addTask(newTaskText.trim(), newTaskDate || undefined)
       setNewTaskText("")
       setNewTaskDate("")
+      if (newTaskInputRef.current) newTaskInputRef.current.value = ""
     }
   }
 
@@ -107,9 +110,10 @@ export function TasksDashboard({ onClose }: TasksDashboardProps) {
       <form onSubmit={handleAddTask} className="px-6 mb-6 flex flex-col gap-3">
         <div className="flex gap-3">
           <input
+            ref={newTaskInputRef}
             type="text"
             placeholder="Add a new task..."
-            value={newTaskText}
+            defaultValue={newTaskText}
             onChange={(e) => setNewTaskText(e.target.value)}
             className="flex-1 bg-white/50 dark:bg-white/5 border border-gray-200/50 dark:border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-colors"
           />
