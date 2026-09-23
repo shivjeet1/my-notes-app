@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { NotesList } from "./components/NotesList"
 import { NoteEditor } from "./components/NoteEditor"
+import { useBackButton } from "./hooks/useBackButton"
 import { SearchBar } from "./components/SearchBar"
 import { SettingsPanel } from "./components/SettingsPanel"
 import { TasksDashboard } from "./components/TasksDashboard"
@@ -10,8 +11,8 @@ import { useNotes } from "./hooks/useNotes"
 import { Plus, Settings, Book, LayoutGrid, List } from "lucide-react"
 import { SplashScreen } from "@capacitor/splash-screen"
 import { App as CapApp } from "@capacitor/app"
-import { AnimatePresence, motion } from "framer-motion"
 import { Capacitor } from "@capacitor/core"
+import { AnimatePresence, motion } from "framer-motion"
 
 export default function App() {
   const { notes, addNote, deleteNote, updateNote, togglePin, reorderNotes } = useNotes()
@@ -21,6 +22,14 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
   const [showTasks, setShowTasks] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => (localStorage.getItem('viewMode') as 'grid' | 'list') || 'grid')
+
+  useBackButton(() => {
+    if (searchQuery) {
+      setSearchQuery("")
+    } else {
+      CapApp.exitApp()
+    }
+  }, !showEditor && !showTasks && !showSettings)
 
   useEffect(() => {
     localStorage.setItem('viewMode', viewMode)

@@ -3,6 +3,7 @@ import { motion, AnimatePresence, PanInfo, Reorder } from "framer-motion"
 import { ChevronLeft, Plus, Trash2, CheckCircle2, Circle, GripVertical } from "lucide-react"
 import { useDragControls } from "framer-motion"
 import { useTasks } from "../hooks/useTasks"
+import { useBackButton } from "../hooks/useBackButton"
 import { ConfirmDialog } from "./ConfirmDialog"
 
 interface TasksDashboardProps {
@@ -70,6 +71,10 @@ const TaskItem = ({ task, toggleTask, updateTask, setTaskToDelete }: any) => {
 
 export function TasksDashboard({ onClose }: TasksDashboardProps) {
   const { tasks, addTask, toggleTask, deleteTask, updateTask, reorderTasks } = useTasks()
+  
+  useBackButton(() => {
+    onClose()
+  })
   const [newTaskText, setNewTaskText] = useState("")
   const [newTaskDate, setNewTaskDate] = useState("")
   const [taskToDelete, setTaskToDelete] = useState<string | null>(null)

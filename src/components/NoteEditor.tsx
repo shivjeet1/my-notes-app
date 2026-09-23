@@ -4,6 +4,7 @@ import { useState } from "react"
 import type { Note } from "../types/Note"
 import { Check, ChevronLeft } from "lucide-react"
 import { ConfirmDialog } from "./ConfirmDialog"
+import { useBackButton } from "../hooks/useBackButton"
 import ReactMarkdown from "react-markdown"
 
 interface NoteEditorProps {
