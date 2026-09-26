@@ -88,9 +88,13 @@ const clearPressTimer = () => {
       onPointerDown={(e) => {
         if (!isTouchDevice) return
         touchStart.current = { x: e.clientX, y: e.clientY }
+        
+        // Save event to pass to framer motion securely
+        const syntheticEvent = e
+        
         pressTimer.current = setTimeout(() => {
-          openMenuAt(e.clientX, e.clientY)
-        }, 500)
+          if (dragControls) dragControls.start(syntheticEvent, { snapToCursor: true })
+        }, 300) // 300ms is standard for Android long-press drag
       }}
 
       onPointerMove={(e) => {
