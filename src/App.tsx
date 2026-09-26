@@ -95,7 +95,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden relative" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+    <div className="h-[100dvh] flex flex-col bg-gray-50 dark:bg-black text-gray-900 dark:text-white transition-colors duration-300 overflow-hidden relative" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <AnimatePresence>
         {showEditor && (
           <motion.div
@@ -125,7 +125,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <div className="h-screen overflow-y-auto pb-32">
+      <div className="flex-1 overflow-y-auto pb-32">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-4xl font-bold text-blue-500">My Notes</h1>

@@ -17,7 +17,7 @@ const ReorderableNoteItem = ({ note, viewMode, onEdit, onDelete, onTogglePin }: 
   return (
     <Reorder.Item 
       value={note}
-      className={viewMode === 'grid' ? "break-inside-avoid relative" : "w-full relative"}
+      className={viewMode === 'grid' ? "break-inside-avoid relative mb-3 sm:mb-4" : "w-full relative"}
       layout
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1, rotate: 0, zIndex: 1, boxShadow: "0 0px 0px 0px rgba(0,0,0,0)" }}
@@ -56,7 +56,7 @@ export function NotesList({
       axis="y" 
       values={notes} 
       onReorder={onReorder} 
-      className={viewMode === 'grid' ? "columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4" : "flex flex-col gap-4"}
+      className={viewMode === 'grid' ? "columns-2 md:columns-3 lg:columns-4 gap-3 sm:gap-4" : "flex flex-col gap-4"}
     >
       <AnimatePresence>
         {notes.map((note) => (
