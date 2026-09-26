@@ -103,7 +103,7 @@ export default function App() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0.5 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="absolute inset-0 z-20 bg-transparent"
+            className="fixed inset-0 z-20 bg-transparent"
           >
             <NoteEditor
               note={editingId ? notes.find((n) => n.id === editingId) : undefined}
@@ -118,7 +118,7 @@ export default function App() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0.5 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="absolute inset-0 z-20 bg-transparent"
+            className="fixed inset-0 z-20 bg-transparent"
           >
             <TasksDashboard onClose={() => setShowTasks(false)} />
           </motion.div>
